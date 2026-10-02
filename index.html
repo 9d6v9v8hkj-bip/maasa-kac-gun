@@ -2,147 +2,492 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#07111f">
 <title>Maaşa Kaç Gün?</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#07111f;color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-.app{max-width:500px;margin:auto;padding:22px 15px 70px}
-header{font-size:22px;font-weight:900;margin-bottom:18px}
-.card{background:#101d30;border:1px solid #253a58;border-radius:22px;padding:17px;margin:12px 0}
-.hero{text-align:center;padding:28px 15px}
-.small{font-size:11px;color:#8fa2bb}
-.amount{font-size:45px;font-weight:900;color:#56e39f;margin:10px}
-.days{color:#a9dcff}
+body{
+ margin:0;background:#07111f;color:#f8fafc;
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+.app{max-width:600px;margin:auto;padding:22px 16px 70px}
+header{margin-bottom:22px}
+.logo{font-size:24px;font-weight:900}
+.logo span{color:#38bdf8}
+.sub{color:#94a3b8;font-size:13px;margin-top:4px}
+
+.card{
+ background:#101d30;border:1px solid #20314a;
+ border-radius:22px;padding:20px;margin-bottom:15px;
+ box-shadow:0 10px 30px rgba(0,0,0,.18)
+}
+
+.hero{text-align:center;padding:30px 18px}
+.label{font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px}
+.amount{font-size:48px;font-weight:900;color:#38bdf8;margin:8px 0}
+.days{color:#cbd5e1;font-size:14px}
+
+.progress{
+ height:9px;background:#1e293b;border-radius:20px;
+ overflow:hidden;margin-top:18px
+}
+.progress div{
+ height:100%;background:#38bdf8;width:0%;transition:.3s
+}
+
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.stat{background:#0b1627;border-radius:15px;padding:14px}
+.stat small{color:#94a3b8}
+.stat strong{display:block;margin-top:5px;font-size:18px}
+
+h2{font-size:17px;margin:0 0 15px}
+
+input,select{
+ width:100%;padding:14px;margin:6px 0 11px;
+ border:1px solid #334155;border-radius:13px;
+ background:#0b1627;color:white;font-size:16px;outline:none
+}
+input:focus,select:focus{border-color:#38bdf8}
+
+button{
+ width:100%;border:0;border-radius:14px;padding:14px;
+ font-size:15px;font-weight:800;cursor:pointer
+}
+.primary{background:#38bdf8;color:#04111e}
+.secondary{background:#1e293b;color:white}
+.danger{background:#3b1820;color:#fecaca}
+
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-label{display:block;font-size:11px;color:#bac8d9;margin:8px 0 5px}
-input,select{width:100%;background:#091626;color:white;border:1px solid #304765;padding:12px;border-radius:12px;font-size:15px}
-button{width:100%;border:0;border-radius:13px;padding:13px;margin-top:12px;background:#56e39f;color:#062234;font-weight:900}
-.item{padding:10px 0;border-top:1px solid #253a58;display:flex;justify-content:space-between;font-size:13px}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.stat{background:#172740;border-radius:15px;padding:13px}
-.stat small{color:#8fa2bb}.stat b{display:block;margin-top:5px}
+
+.expense{
+ background:#0b1627;border-radius:15px;padding:14px;
+ margin-top:9px;display:flex;justify-content:space-between;gap:10px
+}
+.expense-title{font-weight:700}
+.expense-note{font-size:12px;color:#94a3b8;margin-top:4px}
+.expense-price{text-align:right;font-weight:900}
+.actions{display:flex;gap:5px;margin-top:7px}
+.actions button{
+ padding:6px 9px;font-size:11px;width:auto;border-radius:8px
+}
+
+.empty{text-align:center;color:#64748b;padding:20px;font-size:13px}
+.good{color:#4ade80}
+.warn{color:#fbbf24}
+.bad{color:#fb7185}
+
+.status{
+ padding:13px;border-radius:14px;background:#0b1627;
+ margin-top:12px;text-align:center;font-size:13px
+}
+.footer{text-align:center;color:#475569;font-size:11px;margin-top:25px}
+
+.modal{
+ display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);
+ align-items:center;justify-content:center;padding:20px;z-index:20
+}
+.modal.show{display:flex}
+.modalbox{
+ width:100%;max-width:500px;background:#101d30;
+ border:1px solid #334155;border-radius:22px;padding:20px
+}
 </style>
 </head>
+
 <body>
 <div class="app">
 
-<header>₺ Maaşa Kaç Gün?</header>
+<header>
+ <div class="logo">Maaşa <span>Kaç Gün?</span></div>
+ <div class="sub">Paranı maaş gününe kadar kontrol altında tut.</div>
+</header>
 
 <div class="card hero">
-<div class="small">BUGÜN GÜVENLE HARCAYABİLECEĞİN</div>
-<div class="amount" id="daily">— TL</div>
-<div class="days" id="days">Planını oluştur</div>
-</div>
+ <div class="label">Bugün güvenle harcayabilirsin</div>
+ <div class="amount" id="daily">₺0</div>
+ <div class="days" id="daysText">Planını oluştur 👇</div>
 
-<div class="stats">
-<div class="stat"><small>KALAN PARA</small><b id="remaining">—</b></div>
-<div class="stat"><small>TOPLAM HARCAMA</small><b id="spent">0 TL</b></div>
+ <div class="progress"><div id="progress"></div></div>
+
+ <div class="stats">
+  <div class="stat">
+   <small>Kalan para</small>
+   <strong id="remaining">₺0</strong>
+  </div>
+  <div class="stat">
+   <small>Toplam harcama</small>
+   <strong id="spent">₺0</strong>
+  </div>
+ </div>
+
+ <div class="status" id="status">Henüz bir plan oluşturmadın.</div>
 </div>
 
 <div class="card">
-<h3>Planım</h3>
-<div class="grid">
-<div><label>Toplam gelir</label><input id="income" type="number"></div>
-<div><label>Sabit giderler</label><input id="fixed" type="number"></div>
-<div><label>Birikim hedefi</label><input id="saving" type="number"></div>
-<div><label>Sonraki maaş günü</label><input id="payday" type="date"></div>
-</div>
-<button onclick="savePlan()">Planı Kaydet</button>
+ <h2>💰 Maaş planım</h2>
+
+ <label>Aylık gelir</label>
+ <input id="income" type="number" inputmode="decimal" placeholder="Örn. 35000">
+
+ <label>Sabit giderler</label>
+ <input id="fixed" type="number" inputmode="decimal" placeholder="Kira, faturalar vb.">
+
+ <label>Bu ay ayırmak istediğin tasarruf</label>
+ <input id="saving" type="number" inputmode="decimal" placeholder="Örn. 3000">
+
+ <label>Bir sonraki maaş günü</label>
+ <input id="payday" type="date">
+
+ <button class="primary" onclick="savePlan()">Planı Kaydet</button>
 </div>
 
 <div class="card">
-<h3>Harcama Ekle</h3>
-<div class="grid">
-<div><label>Tutar</label><input id="expense" type="number"></div>
-<div>
-<label>Kategori</label>
-<select id="category">
-<option>Market</option>
-<option>Yemek</option>
-<option>Ulaşım</option>
-<option>Fatura</option>
-<option>Alışveriş</option>
-<option>Eğlence</option>
-<option>Sağlık</option>
-<option>Diğer</option>
-</select>
-</div>
-</div>
-<label>Not</label>
-<input id="note">
-<button onclick="addExpense()">Harcamayı Kaydet</button>
-<div id="history"></div>
+ <h2>➕ Harcama ekle</h2>
+
+ <input id="expenseAmount" type="number" inputmode="decimal" placeholder="Tutar">
+
+ <div class="grid">
+  <select id="category">
+   <option>Market</option>
+   <option>Yemek</option>
+   <option>Ulaşım</option>
+   <option>Fatura</option>
+   <option>Alışveriş</option>
+   <option>Eğlence</option>
+   <option>Sağlık</option>
+   <option>Diğer</option>
+  </select>
+
+  <input id="expenseDate" type="date">
+ </div>
+
+ <input id="note" placeholder="Not (isteğe bağlı)">
+
+ <button class="primary" onclick="addExpense()">Harcamayı Ekle</button>
 </div>
 
+<div class="card">
+ <h2>📊 Harcama geçmişi</h2>
+ <div id="expenseList"></div>
+</div>
+
+<div class="card">
+ <h2>⚙️ Veriler</h2>
+ <button class="danger" onclick="resetAll()">Tüm Verileri Sıfırla</button>
+</div>
+
+<div class="footer">
+ Maaşa Kaç Gün? • Verilerin yalnızca bu cihazda saklanır.
+</div>
+
+</div>
+
+<div class="modal" id="editModal">
+ <div class="modalbox">
+  <h2>Harcamayı düzenle</h2>
+
+  <input id="editAmount" type="number" inputmode="decimal">
+
+  <select id="editCategory">
+   <option>Market</option>
+   <option>Yemek</option>
+   <option>Ulaşım</option>
+   <option>Fatura</option>
+   <option>Alışveriş</option>
+   <option>Eğlence</option>
+   <option>Sağlık</option>
+   <option>Diğer</option>
+  </select>
+
+  <input id="editDate" type="date">
+  <input id="editNote" placeholder="Not">
+
+  <div class="grid">
+   <button class="secondary" onclick="closeEdit()">Vazgeç</button>
+   <button class="primary" onclick="saveEdit()">Kaydet</button>
+  </div>
+ </div>
 </div>
 
 <script>
-const KEY="maasa-kac-gun";
+const KEY="maasa-kac-gun-v4";
 
-let data=JSON.parse(localStorage.getItem(KEY)||'{"income":0,"fixed":0,"saving":0,"payday":"","expenses":[]}');
+let data={
+ income:0,
+ fixed:0,
+ saving:0,
+ payday:"",
+ expenses:[]
+};
+
+let editing=null;
 
 function money(n){
-return new Intl.NumberFormat("tr-TR",{maximumFractionDigits:0}).format(Math.max(0,n))+" TL";
+ return new Intl.NumberFormat("tr-TR",{
+  style:"currency",
+  currency:"TRY",
+  maximumFractionDigits:0
+ }).format(n||0);
 }
 
-function daysLeft(){
-if(!data.payday)return 0;
-let now=new Date();
-now.setHours(0,0,0,0);
-let pay=new Date(data.payday+"T00:00:00");
-return Math.max(1,Math.ceil((pay-now)/86400000));
+function todayString(){
+ const d=new Date();
+ const y=d.getFullYear();
+ const m=String(d.getMonth()+1).padStart(2,"0");
+ const day=String(d.getDate()).padStart(2,"0");
+ return `${y}-${m}-${day}`;
 }
 
-function render(){
-income.value=data.income||"";
-fixed.value=data.fixed||"";
-saving.value=data.saving||"";
-payday.value=data.payday||"";
+function load(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(KEY));
+  if(saved) data={...data,...saved};
+ }catch(e){}
 
-let totalSpent=data.expenses.reduce((a,e)=>a+e.amount,0);
-let remainingMoney=data.income-data.fixed-data.saving-totalSpent;
-let d=daysLeft();
+ income.value=data.income||"";
+ fixed.value=data.fixed||"";
+ saving.value=data.saving||"";
+ payday.value=data.payday||"";
 
-daily.textContent=d?money(remainingMoney/d):"— TL";
-days.textContent=d?"Maaşa "+d+" gün kaldı":"Planını oluştur";
-remaining.textContent=d?money(remainingMoney):"—";
-spent.textContent=money(totalSpent);
+ expenseDate.value=todayString();
 
-history.innerHTML=data.expenses.length
-?data.expenses.slice().reverse().map(e =>
-'<div class="item"><span>'+e.category+(e.note?" • "+e.note:"")+'</span><b>'+money(e.amount)+'</b></div>'
-).join("")
-:'<p class="small">Henüz harcama eklenmedi.</p>';
+ render();
+}
 
-localStorage.setItem(KEY,JSON.stringify(data));
+function persist(){
+ localStorage.setItem(KEY,JSON.stringify(data));
 }
 
 function savePlan(){
-data.income=Number(income.value)||0;
-data.fixed=Number(fixed.value)||0;
-data.saving=Number(saving.value)||0;
-data.payday=payday.value;
-render();
+ data.income=Number(income.value)||0;
+ data.fixed=Number(fixed.value)||0;
+ data.saving=Number(saving.value)||0;
+ data.payday=payday.value;
+
+ if(!data.income){
+  alert("Aylık gelirini yaz.");
+  return;
+ }
+
+ if(!data.payday){
+  alert("Maaş gününü seç.");
+  return;
+ }
+
+ persist();
+ render();
+}
+
+function daysLeft(){
+ if(!data.payday) return 0;
+
+ const now=new Date();
+ now.setHours(0,0,0,0);
+
+ const p=new Date(data.payday+"T00:00:00");
+ const diff=Math.ceil((p-now)/86400000);
+
+ return Math.max(1,diff);
+}
+
+function totalSpent(){
+ return data.expenses.reduce((a,e)=>a+Number(e.amount||0),0);
 }
 
 function addExpense(){
-let amount=Number(expense.value)||0;
-if(amount<=0)return alert("Harcama tutarını gir.");
+ const amount=Number(expenseAmount.value);
 
-data.expenses.push({
-amount:amount,
-category:category.value,
-note:note.value.trim()
-});
+ if(!amount || amount<=0){
+  alert("Harcama tutarını yaz.");
+  return;
+ }
 
-expense.value="";
-note.value="";
-render();
+ data.expenses.unshift({
+  id:Date.now(),
+  amount,
+  category:category.value,
+  date:expenseDate.value||todayString(),
+  note:note.value.trim()
+ });
+
+ expenseAmount.value="";
+ note.value="";
+ expenseDate.value=todayString();
+
+ persist();
+ render();
 }
 
-render();
+function removeExpense(id){
+ if(!confirm("Bu harcamayı silmek istiyor musun?")) return;
+
+ data.expenses=data.expenses.filter(e=>e.id!==id);
+
+ persist();
+ render();
+}
+
+function openEdit(id){
+ const e=data.expenses.find(x=>x.id===id);
+ if(!e) return;
+
+ editing=id;
+
+ editAmount.value=e.amount;
+ editCategory.value=e.category;
+ editDate.value=e.date;
+ editNote.value=e.note||"";
+
+ editModal.classList.add("show");
+}
+
+function closeEdit(){
+ editing=null;
+ editModal.classList.remove("show");
+}
+
+function saveEdit(){
+ const e=data.expenses.find(x=>x.id===editing);
+ if(!e) return;
+
+ const amount=Number(editAmount.value);
+
+ if(!amount || amount<=0){
+  alert("Geçerli bir tutar gir.");
+  return;
+ }
+
+ e.amount=amount;
+ e.category=editCategory.value;
+ e.date=editDate.value||todayString();
+ e.note=editNote.value.trim();
+
+ persist();
+ closeEdit();
+ render();
+}
+
+function resetAll(){
+ if(!confirm("Tüm plan ve harcamalar silinecek. Emin misin?")) return;
+
+ localStorage.removeItem(KEY);
+
+ data={
+  income:0,
+  fixed:0,
+  saving:0,
+  payday:"",
+  expenses:[]
+ };
+
+ income.value="";
+ fixed.value="";
+ saving.value="";
+ payday.value="";
+ expenseDate.value=todayString();
+
+ render();
+}
+
+function render(){
+ const spentTotal=totalSpent();
+
+ const usable=Math.max(
+  0,
+  Number(data.income)-Number(data.fixed)-Number(data.saving)
+ );
+
+ const remain=Math.max(0,usable-spentTotal);
+ const days=daysLeft();
+ const daily=days ? remain/days : 0;
+
+ remaining.textContent=money(remain);
+ spent.textContent=money(spentTotal);
+ daily.textContent=money(daily);
+
+ if(data.payday){
+  daysText.textContent=`Maaşa ${days} gün kaldı`;
+ }else{
+  daysText.textContent="Planını oluştur 👇";
+ }
+
+ let percent=0;
+
+ if(usable>0){
+  percent=Math.min(100,(spentTotal/usable)*100);
+ }
+
+ progress.style.width=percent+"%";
+
+ if(!data.income || !data.payday){
+  status.textContent="Gelirini ve maaş gününü girerek başla.";
+  status.className="status";
+ }
+ else if(percent<60){
+  status.textContent="🟢 Bütçen kontrol altında.";
+  status.className="status good";
+ }
+ else if(percent<85){
+  status.textContent="🟡 Harcamalar yükseliyor. Biraz dikkat.";
+  status.className="status warn";
+ }
+ else{
+  status.textContent="🔴 Bütçenin büyük kısmını kullandın.";
+  status.className="status bad";
+ }
+
+ if(!data.expenses.length){
+  expenseList.innerHTML=
+   '<div class="empty">Henüz harcama eklenmedi.</div>';
+  return;
+ }
+
+ expenseList.innerHTML=data.expenses.map(e=>`
+  <div class="expense">
+   <div>
+    <div class="expense-title">${escapeHtml(e.category)}</div>
+
+    <div class="expense-note">
+     ${formatDate(e.date)}
+     ${e.note ? " • "+escapeHtml(e.note) : ""}
+    </div>
+   </div>
+
+   <div>
+    <div class="expense-price">${money(e.amount)}</div>
+
+    <div class="actions">
+     <button class="secondary"
+      onclick="openEdit(${e.id})">Düzenle</button>
+
+     <button class="danger"
+      onclick="removeExpense(${e.id})">Sil</button>
+    </div>
+   </div>
+  </div>
+ `).join("");
+}
+
+function formatDate(s){
+ if(!s) return "";
+
+ const [y,m,d]=s.split("-");
+
+ return `${d}.${m}.${y}`;
+}
+
+function escapeHtml(str){
+ return String(str||"")
+  .replaceAll("&","&amp;")
+  .replaceAll("<","&lt;")
+  .replaceAll(">","&gt;")
+  .replaceAll('"',"&quot;")
+  .replaceAll("'","&#039;");
+}
+
+load();
 </script>
 </body>
 </html>
